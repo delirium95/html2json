@@ -129,6 +129,14 @@ The `html_samples/` directory contains:
 ## AI assistance disclosure
 
 AI assistance was used throughout implementation and review, as required by the
-assignment. Before submission, replace the placeholder in
-`ai_help/chatgpt_chat.txt` with the public share link for the complete
-conversation and verify that the link opens in an incognito window.
+assignment. The [dialogue transcript](ai_help/conversation_transcript.md) records
+the visible user and assistant messages, with its snapshot boundary and omitted
+tool logs explicitly noted. The separate
+[collaboration notes](ai_help/implementation_notes.md) explain the decisions,
+verification, and limitations; they are a retrospective summary, not additional
+dialogue.
+
+Before submission, replace the placeholder in `ai_help/chatgpt_chat.txt` with
+the public share link for the complete conversation and verify that the link
+opens in an incognito window. The local transcript is a supplementary artifact
+and does not replace that requested link.
