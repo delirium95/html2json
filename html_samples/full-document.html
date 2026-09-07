@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML to JSON sample</title>
+    <style>
+      .notice::before { content: "<sample>"; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Sample document</h1>
+    </header>
+    <main>
+      <section id="intro">
+        <h2>Mixed content</h2>
+        <p>Hello <em>from a nested element</em>!</p>
+      </section>
+      <section id="data">
+        <h2>Table</h2>
+        <table>
+          <thead>
+            <tr><th>Name</th><th>Value</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>alpha</td><td>1</td></tr>
+            <tr><td>beta</td><td>2</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+    <script>
+      const comparison = 1 < 2;
+      const markupLookingString = "<button>not an element</button>";
+    </script>
+  </body>
+</html>

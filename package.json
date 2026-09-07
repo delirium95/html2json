@@ -1,0 +1,14 @@
+{
+  "name": "jito-html2json-test-task",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dependency-free HTML-to-JSON syntax tree converter",
+  "main": "html2json.js",
+  "scripts": {
+    "test": "node test/html2json.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED"
+}

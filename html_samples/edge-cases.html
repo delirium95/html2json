@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "about:legacy-compat">
+<!-- Optional closing tags are valid HTML in these contexts. -->
+<ul>
+  <li>First item
+  <li>Second item
+  <li>Third item
+</ul>
+<select multiple>
+  <optgroup label="Letters">
+    <option value="a">Alpha
+    <option value="b">Beta
+  <optgroup label="Numbers">
+    <option value="1">One
+</select>
+<p>This paragraph closes before the following section.
+<section hidden>
+  <h2>Raw text and references</h2>
+  <textarea><strong>This remains text</strong> &copy;</textarea>
+  <input disabled value="">
+</section>
+<svg viewBox="0 0 20 20" aria-label="circle sample">
+  <circle cx="10" cy="10" r="8" />
+  <foreignObject x="2" y="2" width="16" height="16">
+    <div>HTML inside SVG<br>with a void element.</div>
+  </foreignObject>
+  <![CDATA[raw <svg> text]]>
+</svg>

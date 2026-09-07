@@ -1,34 +1,134 @@
-# Jito's Software Development Intern "html2json" Test Task
+# Dependency-free `html2json`
 
-## Task Rationale
-This task is designed to evaluate how well you solve problems without having every detail explicitly provided and to assess the quality of your deliverables. This type of task isn't necessarily reflective of your future work but aims to help us understand your thought process and reasoning in the context of software development.
+This repository contains my solution to Jito's Software Development Intern
+test task. `html2json(htmlText)` converts a complete HTML document or a fragment
+into a JSON-serializable syntax tree without using a browser DOM API, a DOM
+parser, or a third-party dependency.
 
-## Assignment
-Your task is to implement a function called `html2json`, which converts HTML data into a JSON representation.
-AI tools usage is <b>REQUIRED</b>. Is is required that you provide your entire conversation history by attaching a link to the dialogue. Therefore, keep all your research within a single conversation and submit the link along with your task.
+The supplied [`index.html`](index.html) remains the browser UI. Enter HTML and
+press **Convert to JSON**, or use either example button.
 
-## Expected repository structure
-- `html2json.js` - This file should contain your implementation of the html2json function.
-- `html_samples/` folder - Include files with a text that you used as samples to test your function.
-- `index.html` - The initial file we provided. You can leave it unchanged, but please include it in the archive.
-- `ai_help/` folder - If you used any resources for code generation:
-- Create a file named `chatgpt_chat.txt` with a link to the ChatGPT chat used.
-- For any other AI resources, attach relevant `.pdf`, `.png`, or `.mp4` files showing how you used them.
-- You can optionally update `README.md` completely if you want to add explanations of your reasoning or any other comments.
+## Running it
 
-## Key Points for Evaluation
-- Coverage of various HTML structures and different sizes.
-- The code <b>MUST NOT</b> crash.
-- Code cleanliness and formatting.
-- Using a DOM parser is not allowed.
-- How effectively you handled unexpected scenarios, such as situations where your code received valid HTML but still crashed or produced incorrect results. We will evaluate your ability to anticipate edge cases and ensure robustness in your solution.
+No installation is required for the browser demo. Open `index.html` in a
+browser.
 
-## P.S. from the team
-Please focus on quality rather than speed. Quality in this context means ensuring your solution is well thought-out, robust, and free of obvious issues. The speed of delivery will <b>NOT</b> be prioritized, so take the necessary time to research and refine your approach, as long as you complete the task within the specified timeframe.
-Before submitting your final results, double or even triple-check everything:
-- Verify that all links you provide are accessible in incognito mode, as broken links will result in your submission <b>NOT</b> being reviewed.
-- Just before submitting, test your code again to ensure it still functions correctly and handles the html samples without crashing. If your code crashes or fails on your own samples, it will be treated as a failed submission.
-- Make sure all items are included according to the [Expected Deliverables](#expected-deliverables) section. If any required files or information are missing, we will <b>NOT</b> be able to review your task, and it will be <ins>treated as failed</ins>.
-- Jito’s senior developer will thoroughly review your solution. Based on this review, if deemed appropriate, you may be invited for a technical code review. This will include questions about the code, your understanding, and the reasoning behind your solution choices.
-- The best indicator that you’ve done your best is the feeling of confidence when submitting, knowing that you have thoroughly checked your work and cannot think of anything more to improve.
-- You can view test task template [here](https://jito-dev.github.io/jito-intern-test-task/)
+The function is also exported for Node.js:
+
+```js
+const html2json = require("./html2json");
+
+const result = html2json('<p class="lead">Hello <em>world</em>!</p>');
+console.log(JSON.stringify(result, null, 2));
+```
+
+Run the automated tests with Node.js 18 or newer:
+
+```sh
+npm test
+```
+
+## JSON format
+
+Every result has one document root and an ordered `children` array:
+
+```json
+{
+  "type": "document",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "p",
+      "attributes": [
+        { "name": "class", "value": "lead" },
+        { "name": "hidden", "value": null }
+      ],
+      "children": [
+        { "type": "text", "value": "Hello " },
+        {
+          "type": "element",
+          "tagName": "em",
+          "attributes": [],
+          "children": [{ "type": "text", "value": "world" }]
+        },
+        { "type": "text", "value": "!" }
+      ]
+    }
+  ]
+}
+```
+
+Supported node shapes are:
+
+- `document`: the stable root for documents and fragments.
+- `element`: source-spelled `tagName`, ordered `attributes`, and ordered
+  `children`.
+- `text` and `comment`: their contents in `value`.
+- `doctype`: parsed `name`, `publicId`, and `systemId`.
+- `cdata`, `declaration`, and `processingInstruction`: useful for foreign or
+  XML-like content that can occur in real inputs.
+
+Attributes are an array rather than an object for three reasons: source order
+is retained, duplicate attributes do not overwrite each other, and a boolean
+attribute (`value: null`) remains distinguishable from an explicitly empty one
+(`value: ""`). Mixed content is represented correctly because text and element
+nodes share the same ordered `children` array.
+
+Text and attribute values deliberately retain character references exactly as
+written. For example, `&copy;`, `&#169;`, and `©` remain distinguishable. This
+makes the result source-faithful and avoids silently changing data during a
+structural conversion.
+
+## Parser behavior
+
+The implementation is a custom, state-aware tokenizer plus an iterative tree
+builder. It includes handling for:
+
+- quoted, unquoted, empty, boolean, and duplicate attributes;
+- comments, doctypes with public/system identifiers, declarations, CDATA, and
+  processing instructions;
+- raw-text and escapable raw-text elements such as `script`, `style`, `title`,
+  and `textarea`;
+- HTML void elements;
+- common optional end tags (`p`, `li`, `dt`/`dd`, headings, options, and table
+  rows/cells/sections);
+- case-insensitive HTML end-tag matching while retaining source spelling;
+- self-closing foreign content in SVG and MathML, including HTML integration
+  points;
+- complete documents, fragments, whitespace-only input, large text, and deeply
+  nested input.
+
+The main parsing loop always advances its cursor and uses an explicit stack, so
+truncated tags and deep nesting cannot cause infinite loops or recursive stack
+overflows. Invalid or incomplete markup is handled on a best-effort basis. The
+public function also has a final safety boundary: if an unforeseen internal
+error occurs, it returns the original input as a text node instead of throwing.
+Values other than strings are safely converted, with `null` and `undefined`
+treated as empty input.
+
+This is intentionally a source-oriented syntax tree, not a reimplementation of
+the browser DOM. It does not invent omitted `html`, `head`, or `body` nodes, and
+it does not apply browser-only error-correction algorithms such as table foster
+parenting or the active-formatting adoption-agency algorithm. Explicit source
+structure and the documented optional-end-tag rules determine the output.
+
+## Verification and samples
+
+The test suite contains 19 scenarios covering the browser and Node.js APIs, the
+output contract, mixed content, raw text, void and foreign elements, optional
+closing tags, hostile and malformed values, a 5000-level tree, a roughly 500 KB
+text payload, and every checked-in sample.
+
+The `html_samples/` directory contains:
+
+- `mixed-fragment.html` — a small fragment with mixed content and attributes;
+- `full-document.html` — a complete document with styles, scripts, and a table;
+- `edge-cases.html` — optional end tags, raw text, boolean attributes, SVG,
+  foreign content, and CDATA.
+
+## AI assistance disclosure
+
+AI assistance was used throughout implementation and review, as required by the
+assignment. Before submission, replace the placeholder in
+`ai_help/chatgpt_chat.txt` with the public share link for the complete
+conversation and verify that the link opens in an incognito window.
