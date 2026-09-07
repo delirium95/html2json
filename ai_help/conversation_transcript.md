@@ -1,8 +1,8 @@
 # Conversation transcript
 
 This is a manually assembled transcript of the visible user and assistant
-messages in this conversation, through the assistant's acknowledgement of the
-destination repository below. The messages remain in their original Ukrainian and
+messages in this conversation, through the assistant's test-review update in
+message 26 below. The messages remain in their original Ukrainian and
 in chronological order. No user questions or assistant answers have been
 invented or rewritten to make the collaboration appear different.
 
@@ -108,3 +108,23 @@ https://github.com/delirium95/html2json.git
 ## 21. Assistant
 
 Додав транскрипт і окремі нотатки з поясненням рішень та меж перевірок. Тепер перевірю `delirium95/html2json`, додам його як `origin` і запушу рішення разом із цими файлами.
+
+## 22. Assistant
+
+Рішення вже в `main` твого репозиторію. Перед push повторно пройшли всі 19 тестів. Перевіряю доступність файлів за публічними посиланнями; у `chatgpt_chat.txt` ще залишається місце для посилання на повну розмову, яке вимагають умови.
+
+## 23. User
+
+чи є там тести для тієї функції?
+
+## 24. User
+
+може треба шось додати?
+
+## 25. Assistant
+
+Так, є 19 автотестів у `test/html2json.test.js`, запускаються через `npm test`. Вони перевіряють структуру JSON, атрибути, вкладеність, пошкоджений HTML і роботу браузерної функції. Зараз перегляну прогалини й додам корисні перевірки, зокрема для вкладених списків, MathML та кнопок прикладів.
+
+## 26. Assistant
+
+Знайшов конкретну прогалину: вкладений `<dl>` міг спричинити передчасне закриття зовнішнього `<dd>`, через що дерево виходило неправильним навіть для валідного HTML. Додам тест, який відтворює цей випадок, і виправлю межу пошуку закривального елемента.

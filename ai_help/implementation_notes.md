@@ -30,7 +30,8 @@ designed or reviewed each implementation choice.
 
 ## Checks actually performed during implementation
 
-The final checked-in suite passed 19 tests. It covers the Node.js export, a
+At the initial implementation commit, the checked-in suite passed 19 tests.
+It covered the Node.js export, a
 classic-script invocation with a mocked UI, expected tree structures, malformed
 inputs, samples, and large/deep inputs. Additional one-off checks exercised
 25,000 generated inputs directly against the internal parser and traversed a
@@ -40,6 +41,21 @@ Headless Chrome successfully loaded the supplied page. That check did not
 exercise button clicks in Chrome; the UI callback was exercised by the mocked
 classic-script test. Generated-input checks establish robustness for those
 inputs, not HTML standard conformance or correctness of every resulting tree.
+
+## Follow-up test review
+
+After the user asked whether more tests were needed, the assistant added 11
+tests for nested lists and tables, MathML, Unicode and mixed-case tags, all
+listed void elements, raw-text closing-tag boundaries, unusual attribute names,
+input script non-execution, both example callbacks, and serialization failures.
+The expanded suite contains 30 tests.
+
+The nested-description-list test failed on the previous implementation: an inner
+`dt` incorrectly closed the outer `dd`. The fix adds `dl` as a boundary for the
+description-item search. Both explicit and omitted inner closing tags are
+covered. The relevant tree-building behavior was checked against the
+[HTML Standard's in-body parsing rules](https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody).
+This targeted fix does not extend the converter into a full browser parser.
 
 ## Limits relevant to a code review
 

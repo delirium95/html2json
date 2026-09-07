@@ -84,6 +84,12 @@ const LIST_SCOPE_BOUNDARIES = new Set([
   "ul",
 ]);
 
+// Inner dt/dd start tags belong to the inner dl; they must not pop an outer dd.
+const DESCRIPTION_SCOPE_BOUNDARIES = new Set([
+  ...DEFAULT_SCOPE_BOUNDARIES,
+  "dl",
+]);
+
 const TABLE_SCOPE_BOUNDARIES = new Set(["html", "table", "template"]);
 const SELECT_SCOPE_BOUNDARIES = new Set(["html", "select", "template"]);
 const P_ELEMENTS = new Set(["p"]);
@@ -661,7 +667,7 @@ function applyImpliedEndTags(stack, openElements, incomingName) {
       stack,
       openElements,
       DESCRIPTION_ITEM_ELEMENTS,
-      DEFAULT_SCOPE_BOUNDARIES
+      DESCRIPTION_SCOPE_BOUNDARIES
     );
   } else if (HEADING_ELEMENTS.has(incomingName)) {
     closeOpenElement(

@@ -114,10 +114,16 @@ structure and the documented optional-end-tag rules determine the output.
 
 ## Verification and samples
 
-The test suite contains 19 scenarios covering the browser and Node.js APIs, the
-output contract, mixed content, raw text, void and foreign elements, optional
-closing tags, hostile and malformed values, a 5000-level tree, a roughly 500 KB
-text payload, and every checked-in sample.
+The test suite contains 30 scenarios covering the browser and Node.js APIs, the
+output contract, mixed content, raw text, all listed void elements, SVG and
+MathML, optional closing tags, nested lists and tables, Unicode, hostile and
+malformed values, a 5000-level tree, a roughly 500 KB text payload, and every
+checked-in sample. UI tests also exercise both example buttons and the
+serialization-error path, and check that input scripts are not executed.
+
+A regression test for nested description lists first reproduced a bug where
+an inner `dt` closed an outer `dd`. The parser now stops that search at the
+containing `dl`, preserving the nested structure.
 
 The `html_samples/` directory contains:
 
@@ -125,6 +131,8 @@ The `html_samples/` directory contains:
 - `full-document.html` — a complete document with styles, scripts, and a table;
 - `edge-cases.html` — optional end tags, raw text, boolean attributes, SVG,
   foreign content, and CDATA.
+- `nested-lists.html` — nested description and numbered lists with optional
+  closing tags.
 
 ## AI assistance disclosure
 
